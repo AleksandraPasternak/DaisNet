@@ -20,7 +20,9 @@ $(document).ready(function () {
             containerElement.setAttribute('class', null);
         }
     };
-	
+
+  var crop_canvas = null;
+
   var resizeableImage = function(image_target) {
     // Some variable and settings
     var $container,
@@ -249,8 +251,7 @@ $(document).ready(function () {
 
     crop = function(){
       //Find the part of the image that is inside the crop box
-      var crop_canvas,
-          left = $('.overlay').offset().left- $container.offset().left,
+      var left = $('.overlay').offset().left- $container.offset().left,
           top =  $('.overlay').offset().top - $container.offset().top,
           width = $('.overlay').width(),
           height = $('.overlay').height();
@@ -290,34 +291,37 @@ $(document).ready(function () {
 
     // Predict
     $('#btn-predict').click(function () {
-        var form_data = new FormData($('#upload-file')[0]);
+        crop_canvas.toBlob(function (blob) {
+            var form_data = new FormData();
+            form_data.append('file', blob, 'image.png')
 
-        // Show loading animation
-        $(this).hide();
-        $('.loader').show();
+            // Show loading animation
+            $(this).hide();
+            $('.loader').show();
 
-        // Make prediction by calling api /predict
-        $.ajax({
-            type: 'POST',
-            url: '/predict',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            async: true,
-            success: function (data) {
-                // Get and display the result
-                $('.loader').hide();
-                $('#result').fadeIn(600);
-                $('#result').text(' Result:  ' + data);
-				if (data == 'no corrosion') {
-					$('#result').css('color', '#80b918');
-				} else {
-					$('#result').css('color', '#dc2f02');
-				}
-                console.log('Success!');
-            },
-        });
+            // Make prediction by calling api /predict
+            $.ajax({
+                type: 'POST',
+                url: '/predict',
+                data: form_data,
+                contentType: false,
+                cache: false,
+                processData: false,
+                async: true,
+                success: function (data) {
+                    // Get and display the result
+                    $('.loader').hide();
+                    $('#result').fadeIn(600);
+                    $('#result').text(' Result:  ' + data);
+                    if (data == 'no corrosion') {
+                        $('#result').css('color', '#80b918');
+                    } else {
+                        $('#result').css('color', '#dc2f02');
+                    }
+                    console.log('Success!');
+                }
+            });
+        }, 'image/png');
     });
 
 });
