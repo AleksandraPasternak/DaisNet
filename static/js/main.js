@@ -59,6 +59,8 @@ $(document).ready(function () {
         loadData();
       }
       reader.readAsDataURL(files[0]);
+
+      event.target.value = ''
       });
 
       // When resizing, we will always use this copy of the original as the base
