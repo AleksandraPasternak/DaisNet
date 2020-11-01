@@ -30,7 +30,7 @@ $(document).ready(function () {
     min_height = 60,
     max_width = 800, // Change as required
     max_height = 1900,
-    init_height=500,
+    init_height= 500,
     resize_canvas = document.createElement('canvas');
     imageData=null;
 

@@ -148,23 +148,13 @@
 	margin-top: -2px;
 }
 
-.btn {
-	padding: 6px 10px;
-	background-color: rgb(222,60,80);
-	border: none;
-	border-radius: 5px;
-	color: #FFF;
-	margin:10px 5px;
-	line-height:30px;
-}
-
 .btn-crop img {
 	vertical-align: middle;
 	margin-left: 8px;
 }
 
 .uploading-result-section {
-    width: 50%;
+    width: 75%;
     height: 100%;
     position: relative;
     float: left;
