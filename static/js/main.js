@@ -5,19 +5,21 @@ $(document).ready(function () {
     $('.loader').hide();
     $('#result').hide();
 
-    // Upload Preview
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-                $('#imagePreview').hide();
-                $('#imagePreview').fadeIn(650);
-			}
-            reader.readAsDataURL(input.files[0]);
+    blurFunction = function(state, res) {
+    /* state can be 1 or 0 */
+        //var containerElement = document.getElementsByTagName("BODY")[0];
+        var containerElement = document.getElementById('main-page');
+        var overlayEle = document.getElementById('page-overlay');
+
+        if (state) {
+            //$('#popup').css('background-image', 'url(' + res + ')');
+            overlayEle.style.display = 'block';
+            containerElement.setAttribute('class', 'blur');
+        } else {
+            overlayEle.style.display = 'none';
+            containerElement.setAttribute('class', null);
         }
-    }
-	
+    };
 	
   var resizeableImage = function(image_target) {
     // Some variable and settings
@@ -47,6 +49,10 @@ $(document).ready(function () {
       var reader = new FileReader();
 
       reader.onload = function(e) {
+        blurFunction(1, e.target.result);
+        $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+        $('#imagePreview').hide();
+        $('#imagePreview').fadeIn(650); //ladnie sie pojawia
         imageData=reader.result;
         loadData();
       }
@@ -81,7 +87,7 @@ $(document).ready(function () {
     image_target.src=imageData;
     orig_src.src=image_target.src;
     
-    //set the image tot he init height
+    //set the image to the init height
     $(image_target).css({
       width:'auto',
       height:init_height
@@ -255,9 +261,13 @@ $(document).ready(function () {
       crop_canvas.height = height;
     
       crop_canvas.getContext('2d').drawImage(image_target, left, top, width, height, 0, 0, width, height);
+
     var dataURL=crop_canvas.toDataURL("image/png");
     image_target.src=dataURL;
     orig_src.src=image_target.src;
+    $('#imagePreview').hide();
+    $('#imagePreview').fadeIn(650);
+    $('#imagePreview').css('background-image', 'url(' + dataURL + ')');
     
     
     $(image_target).bind("load",function() {
