@@ -11,10 +11,23 @@
             <input type="file" name="file" id="imageUpload" accept=".bmp, .png, .jpg, .jpeg">
         </form>
 
-        <div class="image-section" style="display:none;">
-            <div class="img-preview">
-                <div id="imagePreview"> </div>
-            </div>
+		<div class="image-section" style="display:none;">
+			<button class="btn crop">Crop</button>
+			<div class="crop-wrapper">
+				<div class="top-overlay">
+				</div>
+				<div class="bottom-overlay">
+				</div>
+				<div class="left-overlay">
+				</div>
+				<div class="right-overlay">
+				</div>
+				<div class="overlay">
+					<div class="overlay-inner">
+					</div>
+				</div>
+				<img class="resize-image" src="" alt="Resizable image">
+			</div>
             <div>
                 <button type="button" class="btn" id="btn-predict">Predict</button>
             </div>
