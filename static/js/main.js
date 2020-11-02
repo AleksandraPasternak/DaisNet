@@ -5,20 +5,24 @@ $(document).ready(function () {
     $('.loader').hide();
     $('#result').hide();
 
-    // Upload Preview
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-                $('#imagePreview').hide();
-                $('#imagePreview').fadeIn(650);
-			}
-            reader.readAsDataURL(input.files[0]);
+    blurFunction = function(state, res) {
+    /* state can be 1 or 0 */
+        //var containerElement = document.getElementsByTagName("BODY")[0];
+        var containerElement = document.getElementById('main-page');
+        var overlayEle = document.getElementById('page-overlay');
+
+        if (state) {
+            //$('#popup').css('background-image', 'url(' + res + ')');
+            overlayEle.style.display = 'block';
+            containerElement.setAttribute('class', 'blur');
+        } else {
+            overlayEle.style.display = 'none';
+            containerElement.setAttribute('class', null);
         }
-    }
-	
-	
+    };
+
+  var crop_canvas = null;
+
   var resizeableImage = function(image_target) {
     // Some variable and settings
     var $container,
@@ -47,10 +51,16 @@ $(document).ready(function () {
       var reader = new FileReader();
 
       reader.onload = function(e) {
+        blurFunction(1, e.target.result);
+        $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+        $('#imagePreview').hide();
+        $('#imagePreview').fadeIn(650); //ladnie sie pojawia
         imageData=reader.result;
         loadData();
       }
       reader.readAsDataURL(files[0]);
+
+      event.target.value = ''
       });
 
       // When resizing, we will always use this copy of the original as the base
@@ -81,7 +91,7 @@ $(document).ready(function () {
     image_target.src=imageData;
     orig_src.src=image_target.src;
     
-    //set the image tot he init height
+    //set the image to the init height
     $(image_target).css({
       width:'auto',
       height:init_height
@@ -243,8 +253,7 @@ $(document).ready(function () {
 
     crop = function(){
       //Find the part of the image that is inside the crop box
-      var crop_canvas,
-          left = $('.overlay').offset().left- $container.offset().left,
+      var left = $('.overlay').offset().left- $container.offset().left,
           top =  $('.overlay').offset().top - $container.offset().top,
           width = $('.overlay').width(),
           height = $('.overlay').height();
@@ -255,9 +264,13 @@ $(document).ready(function () {
       crop_canvas.height = height;
     
       crop_canvas.getContext('2d').drawImage(image_target, left, top, width, height, 0, 0, width, height);
+
     var dataURL=crop_canvas.toDataURL("image/png");
     image_target.src=dataURL;
     orig_src.src=image_target.src;
+    $('#imagePreview').hide();
+    $('#imagePreview').fadeIn(650);
+    $('#imagePreview').css('background-image', 'url(' + dataURL + ')');
     
     
     $(image_target).bind("load",function() {
@@ -280,34 +293,37 @@ $(document).ready(function () {
 
     // Predict
     $('#btn-predict').click(function () {
-        var form_data = new FormData($('#upload-file')[0]);
+        crop_canvas.toBlob(function (blob) {
+            var form_data = new FormData();
+            form_data.append('file', blob, 'image.png')
 
-        // Show loading animation
-        $(this).hide();
-        $('.loader').show();
+            // Show loading animation
+            $(this).hide();
+            $('.loader').show();
 
-        // Make prediction by calling api /predict
-        $.ajax({
-            type: 'POST',
-            url: '/predict',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            async: true,
-            success: function (data) {
-                // Get and display the result
-                $('.loader').hide();
-                $('#result').fadeIn(600);
-                $('#result').text(' Result:  ' + data);
-				if (data == 'no corrosion') {
-					$('#result').css('color', '#80b918');
-				} else {
-					$('#result').css('color', '#dc2f02');
-				}
-                console.log('Success!');
-            },
-        });
+            // Make prediction by calling api /predict
+            $.ajax({
+                type: 'POST',
+                url: '/predict',
+                data: form_data,
+                contentType: false,
+                cache: false,
+                processData: false,
+                async: true,
+                success: function (data) {
+                    // Get and display the result
+                    $('.loader').hide();
+                    $('#result').fadeIn(600);
+                    $('#result').text(' Result:  ' + data);
+                    if (data == 'no corrosion') {
+                        $('#result').css('color', '#80b918');
+                    } else {
+                        $('#result').css('color', '#dc2f02');
+                    }
+                    console.log('Success!');
+                }
+            });
+        }, 'image/png');
     });
 
 });
