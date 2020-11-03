@@ -214,6 +214,19 @@
     background-position: center;
 }
 
+.gradcam-preview {
+    width: 500px;
+    height: 1000px;
+    position: relative;
+}
+
+.gradcam-preview>div {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .recent-photos {
     width: 25%;
     height: 100%;

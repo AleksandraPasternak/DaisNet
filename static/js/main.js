@@ -2,6 +2,7 @@ $(document).ready(function () {
 	
     // Init
     $('.image-section').hide();
+    $('.gradcam-section').hide();
     $('.loader').hide();
     $('#result').hide();
 
@@ -46,6 +47,8 @@ $(document).ready(function () {
           $('#btn-predict').show();
           $('#result').text('');
           $('#result').hide();
+          $('#gradcamPreview').css('background-image', 'none');
+          $('.gradcam-section').hide();
       
       var files = evt.target.files; // FileList object
       var reader = new FileReader();
@@ -196,7 +199,7 @@ $(document).ready(function () {
       resize_canvas.width = width;
       resize_canvas.height = height;
       resize_canvas.getContext('2d').drawImage(orig_src, 0, 0, width, height);   
-      $(image_target).attr('src', resize_canvas.toDataURL("image/png"));  
+      $(image_target).attr('src', resize_canvas.toDataURL("image/jpg"));
     //$(image_target).width(width).height(height);
     };
 
@@ -265,7 +268,7 @@ $(document).ready(function () {
     
       crop_canvas.getContext('2d').drawImage(image_target, left, top, width, height, 0, 0, width, height);
 
-    var dataURL=crop_canvas.toDataURL("image/png");
+    var dataURL=crop_canvas.toDataURL("image/jpg");
     image_target.src=dataURL;
     orig_src.src=image_target.src;
     $('#imagePreview').hide();
@@ -282,7 +285,7 @@ $(document).ready(function () {
         left:$('.overlay').offset().left- $('.crop-wrapper').offset().left
       })
     });
-      //window.open(crop_canvas.toDataURL("image/png"));
+      //window.open(crop_canvas.toDataURL("image/jpg"));
     }
 
     init();
@@ -295,11 +298,11 @@ $(document).ready(function () {
     $('#btn-predict').click(function () {
         crop_canvas.toBlob(function (blob) {
             var form_data = new FormData();
-            form_data.append('file', blob, 'image.png')
+            form_data.append('file', blob, 'image.jpg')
 
             // Show loading animation
             $(this).hide();
-            $('.loader').show();
+            $('#loader1').show();
 
             // Make prediction by calling api /predict
             $.ajax({
@@ -312,7 +315,7 @@ $(document).ready(function () {
                 async: true,
                 success: function (data) {
                     // Get and display the result
-                    $('.loader').hide();
+                    $('#loader1').hide();
                     $('#result').fadeIn(600);
                     $('#result').text(' Result:  ' + data);
                     if (data == 'no corrosion') {
@@ -320,10 +323,35 @@ $(document).ready(function () {
                     } else {
                         $('#result').css('color', '#dc2f02');
                     }
+                    $('.gradcam-section').show();
+                    $('#btn-gradcam').show();
                     console.log('Success!');
                 }
             });
-        }, 'image/png');
+        }, 'image/jpg');
+    });
+
+    // gradCam
+    $('#btn-gradcam').click(function () {
+
+            // Show loading animation
+            $(this).hide();
+            $('#loader2').show();
+
+            // Make prediction by calling api /predict
+            $.ajax({
+                type: 'POST',
+                url: '/gradcam',
+                contentType: false,
+                cache: false,
+                processData: false,
+                async: true,
+                success: function (data) {
+                    $('#loader2').hide();
+                    $('#gradcamPreview').css('background-image', 'url(' + data + ')');
+                    console.log('Success!');
+                }
+            });
     });
 
 });
