@@ -34,7 +34,6 @@ $(document).ready(function () {
     min_height = 60,
     max_width = 800, // Change as required
     max_height = 1900,
-    init_height= 500,
     resize_canvas = document.createElement('canvas');
     imageData=null;
 
@@ -60,14 +59,14 @@ $(document).ready(function () {
       }
       reader.readAsDataURL(files[0]);
 
-      event.target.value = ''
-      });
+      evt.target.value = ''
+    });
 
       // When resizing, we will always use this copy of the original as the base
       orig_src.src=image_target.src;
 
       // Wrap the image with the container and add resize handles
-      $(image_target).height(init_height)
+      $(image_target)
       .wrap('<div class="resize-container"></div>')
       .before('<span class="resize-handle resize-handle-nw"></span>')
       .before('<span class="resize-handle resize-handle-ne"></span>')
@@ -90,13 +89,11 @@ $(document).ready(function () {
     //set the image target
     image_target.src=imageData;
     orig_src.src=image_target.src;
-    
-    //set the image to the init height
+
     $(image_target).css({
       width:'auto',
-      height:init_height
+      height:'auto'
     });
-    
     
     //resize the canvas
     $(orig_src).bind('load',function() {
