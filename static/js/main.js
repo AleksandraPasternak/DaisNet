@@ -345,7 +345,7 @@ $(document).ready(function () {
                 async: true,
                 success: function (data) {
                     $('#loader2').hide();
-                    $('#gradcamPreview').css('background-image', 'url(' + data + ')');
+                    $('#gradcamPreview').css('background-image', 'url(' + data + "?random="+ new Date().getTime() + ')');
                     console.log('Success!');
                 }
             });
