@@ -2,16 +2,13 @@
 
 <div id="page-overlay">
     <div id="popup">
-        <button class="btn crop">
-            <a href="javascript:blurFunction(0, 0);">Crop</a>
-        </button>
-			<div class="crop-wrapper">
-				<div class="overlay">
-					<div class="overlay-inner">
-					</div>
-				</div>
-				<img class="resize-image" src="" alt="Resizable image">
-			</div>
+        <button class="btn crop">Crop</button>
+        <div class="crop-wrapper">
+            <div class="overlay">
+                <div class="overlay-inner"> </div>
+            </div>
+            <img class="resize-image" src="" alt="Resizable image">
+        </div>
     </div>
 </div>
 
@@ -45,7 +42,9 @@
             <button type="button" class="btn" id="btn-gradcam">More...</button>
             <div class="loader" id="loader2" style="display:none;"></div>
             <div class="gradcam-preview">
-                <div id="gradcamPreview"></div>
+                <div id="gradcamPreview">
+                    <img id="gradcamOutput">
+                </div>
             </div>
         </div>
     </div>

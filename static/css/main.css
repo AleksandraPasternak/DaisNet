@@ -159,6 +159,13 @@
     background-position: center;
 }
 
+#gradcamOutput{
+    cursor: zoom-in;
+    cursor: -webkit-zoom-in;
+    cursor: -moz-zoom-in;
+    width: 320px;
+}
+
 .recent-photos {
     width: 25%;
     height: 100%;
