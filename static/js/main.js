@@ -46,8 +46,6 @@ $(document).ready(function () {
           $('#btn-predict').show();
           $('#result').text('');
           $('#result').hide();
-          $("#gradcamOutput").attr("src", "none");
-          //$('#gradcamPreview').css('background-image', 'none');
           $('.gradcam-section').hide();
       
       var files = evt.target.files; // FileList object
@@ -337,6 +335,11 @@ $(document).ready(function () {
     // gradCam
     $('#btn-gradcam').click(function () {
 
+        crop_canvas.toBlob(function (blob) {
+
+            var form_data = new FormData();
+            form_data.append('file', blob, 'image.jpg')
+
             // Show loading animation
             $(this).hide();
             $('#loader2').show();
@@ -345,6 +348,7 @@ $(document).ready(function () {
             $.ajax({
                 type: 'POST',
                 url: '/gradcam',
+                data: form_data,
                 contentType: false,
                 cache: false,
                 processData: false,
@@ -352,11 +356,11 @@ $(document).ready(function () {
                 success: function (data) {
                     $('#loader2').hide();
                     $('.gradcam-preview').show();
-                    console.log(data);
-                    $("#gradcamOutput").attr("src", data + "?random="+ new Date().getTime());
+                    $("#gradcamOutput").attr("src", "data:image/jpg;base64," + data);
                     console.log('Success!');
                 }
             });
+        }, 'image/jpg');
     });
 
     var previous=0;

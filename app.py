@@ -1,15 +1,19 @@
 from __future__ import division, print_function
 import os
+import io
 import numpy as np
 from pyimagesearch.gradcam import GradCAM
 import cv2
+import uuid
+import base64
+
 
 # Keras
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 
 # Flask utils
-from flask import Flask, redirect, url_for, request, render_template
+from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
 
@@ -18,7 +22,6 @@ app = Flask(__name__)
 MODEL_DIR = "model2"
 TRAINED_MODEL = load_model(MODEL_DIR)
 TARGET_SIZE = (240, 320)
-FILE_PATH = None
 
 
 def preprocess_img(img_path):
@@ -62,22 +65,22 @@ def index():
 
 @app.route('/predict', methods=['GET', 'POST'])
 def upload():
-    global FILE_PATH
     if request.method == 'POST':
         # Get the file from post request
         f = request.files['file']
 
         # Save the file to ./uploads
         base_path = os.path.dirname(__file__)  # path of the current directory under which a .py file is executed
-        FILE_PATH = os.path.join('uploads', secure_filename(f.filename))
-        abs_file_path = os.path.join(base_path, FILE_PATH)
+        _, ext = secure_filename(f.filename).split(".")
+        file_path = os.path.join('uploads', str(uuid.uuid4()) + "." + ext)
+        abs_file_path = os.path.join(base_path, file_path)
         f.save(abs_file_path)
 
         # Make prediction
-        img = preprocess_img(FILE_PATH)
+        img = preprocess_img(file_path)
         predictions = model_predict(img)
         print(predictions)
-        # os.remove(file_path)
+        os.remove(file_path)
 
         pred_class = predictions.argmax()
         result = "corrosion" if pred_class == 1 else "no corrosion"
@@ -87,17 +90,37 @@ def upload():
 
 @app.route('/gradcam', methods=['GET', 'POST'])
 def gradcam_info():
-    global FILE_PATH
     if request.method == 'POST':
         # apply gradcam
         # TODO: work with paths
-        gradcam_output = apply_gradcam(FILE_PATH)
+        f = request.files['file']
+
+        # Save the file to ./uploads
         base_path = os.path.dirname(__file__)  # path of the current directory under which a .py file is executed
-        gradcam_output_fnm = os.path.join('static', "default_pictures", "gradcam_output.jpg")
+        _, ext = secure_filename(f.filename).split(".")
+        file_path = os.path.join('uploads', str(uuid.uuid4()) + "." + ext)
+        abs_file_path = os.path.join(base_path, file_path)
+        f.save(abs_file_path)
+
+        gradcam_output = apply_gradcam(file_path)
+
+        os.remove(file_path)
+
+        gradcam_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
         abs_gradcam_path = os.path.join(base_path, gradcam_output_fnm)
         cv2.imwrite(gradcam_output_fnm, gradcam_output)
 
-        return "/static/default_pictures/gradcam_output.jpg"
+        byte_data = io.BytesIO()
+        with open(gradcam_output_fnm, 'rb') as fo:
+            byte_data.write(fo.read())
+        byte_data.seek(0)
+
+        img_base64 = base64.b64encode(byte_data.read())
+        base64_message = img_base64.decode('utf-8')
+
+        os.remove(gradcam_output_fnm)
+
+        return str(base64_message)
     return None
 
 
