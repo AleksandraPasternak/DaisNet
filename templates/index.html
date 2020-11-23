@@ -13,13 +13,14 @@
 </div>
 
 <h2>Image Classifier</h2>
+<p>This site allows you to upload your DAIS' photo in order to predict whether the airplane's surface is corroded.</p>
 
 <div>
     <div id="main-page">
     <div class="uploading-result-section">
         <form id="upload-file">
             <label for="imageUpload" class="upload-label">
-                Upload
+                Upload photo
             </label>
             <input type="file" name="file" id="imageUpload" accept=".bmp, .png, .jpg, .jpeg">
         </form>
@@ -42,6 +43,7 @@
             <button type="button" class="btn" id="btn-gradcam">More...</button>
             <div class="loader" id="loader2" style="display:none;"></div>
             <div class="gradcam-preview">
+                <p>Heatmap showing which pixels were responsible for prediction:</p>
                 <div id="gradcamPreview">
                     <img id="gradcamOutput">
                 </div>

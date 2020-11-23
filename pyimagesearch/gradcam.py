@@ -85,9 +85,14 @@ class GradCAM:
     def overlay_heatmap(self, heatmap, image, alpha=0.5, colormap=cv2.COLORMAP_VIRIDIS):
         # apply the supplied color map to the heatmap and then
         # overlay the heatmap on the input image
+        width = image.shape[1]
+        heatmap_strip = np.arange(255, dtype=np.uint8)[np.newaxis]
+        heatmap_legend = cv2.applyColorMap(heatmap_strip, colormap)
+        heatmap_legend = cv2.resize(heatmap_legend, (width, 40))
+
         heatmap = cv2.applyColorMap(heatmap, colormap)
         output = cv2.addWeighted(image, alpha, heatmap, 1 - alpha, 0)
 
-        # return a 2-tuple of the color mapped heatmap and the output,
+        # return a 3-tuple of the heatmap legend, color mapped heatmap and the output,
         # overlaid image
-        return heatmap, output
+        return heatmap_legend, heatmap, output

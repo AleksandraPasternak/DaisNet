@@ -6,7 +6,7 @@ from pyimagesearch.gradcam import GradCAM
 import cv2
 import uuid
 import base64
-
+import sqlite3
 
 # Keras
 from tensorflow.keras.models import load_model
@@ -52,9 +52,12 @@ def apply_gradcam(img_path):
     # resize the resulting heatmap to the original input image dimensions
     # and then overlay heatmap on top of the image
     heatmap = cv2.resize(heatmap, (original_img.shape[1], original_img.shape[0]))
-    (heatmap, output) = cam.overlay_heatmap(heatmap, original_img, alpha=0.5)
+    heatmap_legend, heatmap, output = cam.overlay_heatmap(heatmap, original_img, alpha=0.2)
 
-    output = np.vstack([original_img, heatmap, output])
+    white_strip = 255 * np.ones((255, 1, 3), np.uint8)
+    white_strip = cv2.resize(white_strip, (original_img.shape[1], 20))
+
+    output = np.vstack([heatmap_legend, white_strip, heatmap, output])
     return output
 
 

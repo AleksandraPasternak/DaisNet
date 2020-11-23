@@ -366,9 +366,13 @@ $(document).ready(function () {
     var previous=0;
     $('#gradcamOutput').click(function() {
         var s = '#gradcamOutput'
-        $(s).animate({'width':'640px'});
-        $(s).css({'cursor':'zoom-out'});
-        if($(previous).width() != 320) {
+        if($(s).width() == 320) {
+            $(s).animate({'width':'640px'});
+            $(s).css({'cursor':'zoom-out'});
+            $('.gradcam-preview').css({'height':'1100px'})
+        }
+        else if($(previous).width() != 320) {
+            $('.gradcam-preview').css({'height':'550px'})
             $(previous).animate({'width':'320px'});
             $(previous).css({'cursor':'zoom-in'});
         }

@@ -24,6 +24,14 @@
     margin: auto;
 }
 
+#result {
+    margin: 25px 0px 40px 0px;
+}
+
+#btn-gradcam {
+    margin: 10px 0px 30px 0px;
+}
+
 .crop-wrapper {
 	background-color:rgba(255,255,255,1);
 	position:relative;
@@ -122,6 +130,7 @@
 }
 
 .uploading-result-section {
+    margin-top: 25px;
     width: 75%;
     height: 100%;
     position: relative;
@@ -148,7 +157,7 @@
 
 .gradcam-preview {
     width: 500px;
-    height: 1000px;
+    height: 550px;
     position: relative;
 }
 
@@ -197,6 +206,7 @@ input[type="file"] {
 }
 
 .loader {
+    margin: 10px 0px 10px 0px;
     border: 8px solid #f3f3f3;
     border-top: 8px solid #3498db;
     border-radius: 50%;
