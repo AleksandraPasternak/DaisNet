@@ -1,6 +1,8 @@
 $(document).ready(function () {
 	
     // Init
+    $('#button-back-section').hide();
+    $('.about-network-section').hide();
     $('.image-section').hide();
     $('.gradcam-section').hide();
     $('.loader').hide();
@@ -24,6 +26,20 @@ $(document).ready(function () {
     };
 
   var crop_canvas = null;
+
+  $('#btn-about').click(function () {
+    $('.uploading-result-section').hide();
+    $('#button-about-section').hide();
+    $('#button-back-section').show();
+    $('.about-network-section').show();
+  });
+
+  $('#btn-back').click(function () {
+    $('#button-back-section').hide();
+    $('.about-network-section').hide();
+    $('.uploading-result-section').show();
+    $('#button-about-section').show();
+  });
 
   var resizeableImage = function(image_target) {
     // Some variable and settings

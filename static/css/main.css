@@ -24,6 +24,32 @@
     margin: auto;
 }
 
+.description-section {
+    width: 75%;
+    position: relative;
+    float: left;
+}
+
+#button-about-section {
+    width: 25%;
+    position: relative;
+    float: right;
+}
+
+#btn-about {
+    margin: 5px;
+}
+
+#button-back-section {
+    width: 25%;
+    position: relative;
+    float: right;
+}
+
+#btn-back {
+    margin: 5px;
+}
+
 #result {
     margin: 25px 0px 40px 0px;
 }
@@ -135,6 +161,16 @@
     height: 100%;
     position: relative;
     float: left;
+    display: inline-block;
+}
+
+.about-network-section {
+    margin-top: 25px;
+    width: 75%;
+    height: 100%;
+    position: relative;
+    float: left;
+    display: inline-block;
 }
 
 .img-preview {
@@ -180,6 +216,7 @@
     height: 100%;
     position: relative;
     float: right;
+    display: inline-block;
 }
 
 .gallery {
