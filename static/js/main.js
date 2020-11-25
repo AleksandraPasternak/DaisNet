@@ -5,6 +5,7 @@ $(document).ready(function () {
     $('.gradcam-section').hide();
     $('.loader').hide();
     $('#result').hide();
+    var uploadFileName;
 
     blurFunction = function(state, res) {
     /* state can be 1 or 0 */
@@ -60,6 +61,7 @@ $(document).ready(function () {
         loadData();
       }
       reader.readAsDataURL(files[0]);
+      uploadFileName = evt.target.value;
 
       evt.target.value = ''
     });
@@ -298,7 +300,7 @@ $(document).ready(function () {
     $('#btn-predict').click(function () {
         crop_canvas.toBlob(function (blob) {
             var form_data = new FormData();
-            form_data.append('file', blob, 'image.jpg')
+            form_data.append('file', blob, uploadFileName)
 
             // Show loading animation
             $(this).hide();
@@ -317,8 +319,9 @@ $(document).ready(function () {
                     // Get and display the result
                     $('#loader1').hide();
                     $('#result').fadeIn(600);
-                    $('#result').text(' Result:  ' + data);
-                    if (data == 'no corrosion') {
+                    if (data.true_class == "") $('#result').text(' Result: ' + data.result + data.probabilities);
+                    else $('#result').text(' True class: ' + data.true_class + '\n' + ' Result: ' + data.result + data.probabilities);
+                    if (data.result == 'no corrosion') {
                         $('#result').css('color', '#80b918');
                     } else {
                         $('#result').css('color', '#dc2f02');

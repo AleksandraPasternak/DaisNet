@@ -13,7 +13,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 
 # Flask utils
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
 
@@ -22,6 +22,13 @@ app = Flask(__name__)
 MODEL_DIR = "model2"
 TRAINED_MODEL = load_model(MODEL_DIR)
 TARGET_SIZE = (240, 320)
+NAME_PATTERNS = {
+    '0_0_0': 'no corrosion',
+    '1_0_0': 'soft corrosion',
+    '1_1_0': 'medium corossion',
+    '1_1_1': 'hard corossion',
+    '2_0_0': 'soft damage'
+}
 
 
 def preprocess_img(img_path):
@@ -74,7 +81,12 @@ def upload():
 
         # Save the file to ./uploads
         base_path = os.path.dirname(__file__)  # path of the current directory under which a .py file is executed
-        _, ext = secure_filename(f.filename).split(".")
+        name, ext = secure_filename(f.filename).split(".")
+        true_class = ""
+        for class_pattern in NAME_PATTERNS:
+            if name.endswith(class_pattern):
+                true_class = NAME_PATTERNS.get(class_pattern)
+                break
         file_path = os.path.join('uploads', str(uuid.uuid4()) + "." + ext)
         abs_file_path = os.path.join(base_path, file_path)
         f.save(abs_file_path)
@@ -87,7 +99,9 @@ def upload():
 
         pred_class = predictions.argmax()
         result = "corrosion" if pred_class == 1 else "no corrosion"
-        return result
+        probabilities = " (" + str("%.2f" % predictions[pred_class]) + " vs " + str(
+            "%.2f" % predictions[abs(1 - pred_class)]) + ")"
+        return jsonify(true_class=true_class, result=result, probabilities=probabilities)
     return None
 
 
