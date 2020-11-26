@@ -91,6 +91,17 @@ def apply_edges(img_path):
     return img.filter(ImageFilter.CONTOUR).convert('RGB')
 
 
+def prepare_base64_message(output_fnm):
+    byte_data = io.BytesIO()
+    with open(output_fnm, 'rb') as fo:
+        byte_data.write(fo.read())
+    byte_data.seek(0)
+
+    img_base64 = base64.b64encode(byte_data.read())
+    base64_message = img_base64.decode('utf-8')
+    return base64_message
+
+
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -150,18 +161,13 @@ def gradcam_info():
         abs_gradcam_path = os.path.join(base_path, gradcam_output_fnm)
         cv2.imwrite(gradcam_output_fnm, gradcam_output)
 
-        byte_data = io.BytesIO()
-        with open(gradcam_output_fnm, 'rb') as fo:
-            byte_data.write(fo.read())
-        byte_data.seek(0)
-
-        img_base64 = base64.b64encode(byte_data.read())
-        base64_message = img_base64.decode('utf-8')
+        base64_message = prepare_base64_message(gradcam_output_fnm)
 
         os.remove(gradcam_output_fnm)
 
         return str(base64_message)
     return None
+
 
 @app.route('/blur', methods=['GET', 'POST'])
 def blur():
@@ -183,18 +189,13 @@ def blur():
         blur_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
         cv2.imwrite(blur_output_fnm, blur_output)
 
-        byte_data = io.BytesIO()
-        with open(blur_output_fnm, 'rb') as fo:
-            byte_data.write(fo.read())
-        byte_data.seek(0)
-
-        img_base64 = base64.b64encode(byte_data.read())
-        base64_message = img_base64.decode('utf-8')
+        base64_message = prepare_base64_message(blur_output_fnm)
 
         os.remove(blur_output_fnm)
 
         return str(base64_message)
     return None
+
 
 @app.route('/fourier', methods=['GET', 'POST'])
 def fourier():
@@ -216,18 +217,13 @@ def fourier():
         fourier_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
         cv2.imwrite(fourier_output_fnm, fourier_output)
 
-        byte_data = io.BytesIO()
-        with open(fourier_output_fnm, 'rb') as fo:
-            byte_data.write(fo.read())
-        byte_data.seek(0)
-
-        img_base64 = base64.b64encode(byte_data.read())
-        base64_message = img_base64.decode('utf-8')
+        base64_message = prepare_base64_message(fourier_output_fnm)
 
         os.remove(fourier_output_fnm)
 
         return str(base64_message)
     return None
+
 
 @app.route('/sharpen', methods=['GET', 'POST'])
 def sharpen():
@@ -248,18 +244,13 @@ def sharpen():
         sharpen_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
         sharpen_output.save(sharpen_output_fnm)
 
-        byte_data = io.BytesIO()
-        with open(sharpen_output_fnm, 'rb') as fo:
-            byte_data.write(fo.read())
-        byte_data.seek(0)
-
-        img_base64 = base64.b64encode(byte_data.read())
-        base64_message = img_base64.decode('utf-8')
+        base64_message = prepare_base64_message(sharpen_output_fnm)
 
         os.remove(sharpen_output_fnm)
 
         return str(base64_message)
     return None
+
 
 @app.route('/contour', methods=['GET', 'POST'])
 def contour():
@@ -280,13 +271,7 @@ def contour():
         edges_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
         edges_output.save(edges_output_fnm)
 
-        byte_data = io.BytesIO()
-        with open(edges_output_fnm, 'rb') as fo:
-            byte_data.write(fo.read())
-        byte_data.seek(0)
-
-        img_base64 = base64.b64encode(byte_data.read())
-        base64_message = img_base64.decode('utf-8')
+        base64_message = prepare_base64_message(edges_output_fnm)
 
         os.remove(edges_output_fnm)
 
