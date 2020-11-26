@@ -14,10 +14,10 @@
             <input id="fourier" type="number" step="1" max="" value="0" name="quantity_fourier" class="quantity-field" disabled>
             <input type="button" value="+" class="plus-fourier" data-field="quantity_fourier">
             
-            <button class="btn" id="contour">Contour</button>
-            <button class="btn" id="sharpen">Sharpen</button>
-            <button class="btn" id="reset">Reset</button>
-            <button class="btn" id="crop">Crop</button>
+            <button class="btn_tools" id="contour">Contour</button>
+            <button class="btn_tools" id="sharpen">Sharpen</button>
+            <button class="btn_tools" id="reset">Reset</button>
+            <button class="btn_tools" id="grayscale">Grayscale</button>
         </div>
         <div class="crop-wrapper">
             <div class="loader" id="loader-blur" style="display:none;"></div>
@@ -26,6 +26,10 @@
             </div>
             <img class="resize-image" src="" alt="Resizable image" id="resized-image">
         </div>
+        <div id="tools-description">
+            <p>Your photo must fit the gray frame</p>
+        </div>
+        <button class="btn" id="crop_save">Crop & Save</button>
     </div>
 </div>
 

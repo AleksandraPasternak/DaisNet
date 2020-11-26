@@ -63,7 +63,7 @@
 	background-color:rgba(255,255,255,1);
 	position:relative;
 	width:100%;
-	height:85%;
+	height:81%;
 	overflow:hidden;
 }
 
@@ -139,7 +139,7 @@
 	z-index: 999;
 	width: 320px;
 	height: 240px;
-    border: solid 2px rgba(222,222,222,.9);
+    border: solid 3px rgba(222,222,222,.9);
 	box-sizing: content-box;
 	pointer-events: none;
 }
@@ -283,6 +283,36 @@ input[type="file"] {
     transition: all .4s;
     cursor: pointer;
     margin: 1px 4px 0px 4px;
+}
+
+.btn_tools {
+	border-radius: 0;
+	border: none;
+	display: inline-block;
+    padding: 10px 0px;
+    width: 100px;
+    background: #3D5A80;
+    color: #fff;
+    font-size: 0.9em;
+    transition: all .4s;
+    cursor: pointer;
+    margin: 1px 5px 0px 5px;
+}
+
+#tools-description {
+    display: inline-block;
+}
+
+#tools-description p {
+    margin-left: 1em;
+    margin-top: 1em;
+    font-size: 1.05em;
+}
+
+#crop_save {
+    float: right;
+    margin: 3px;
+    display: inline-block;
 }
 
 .tools {

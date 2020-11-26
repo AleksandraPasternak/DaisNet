@@ -101,7 +101,7 @@ $(document).ready(function () {
       // Add events
       $container.on('mousedown touchstart', '.resize-handle', startResize);
       $container.on('mousedown touchstart', '.resize-container-ontop', startMoving);
-      $('#crop').on('click', crop);
+      $('#crop_save').on('click', crop_save);
       $('#contour').on('click', contour);
       $('#sharpen').on('click', sharpen);
       $('#reset').click(function() {
@@ -274,7 +274,7 @@ $(document).ready(function () {
       }
     };
 
-    crop = function () {
+    crop_save = function () {
       //Find the part of the image that is inside the crop box
       var left = $('.overlay').offset().left - $container.offset().left,
         top = $('.overlay').offset().top - $container.offset().top,
@@ -644,7 +644,7 @@ $(document).ready(function () {
   // Kick everything off with the target image
   resizeableImage($('.resize-image'));
 
-  $('#crop').click(function () {
+  $('#crop_save').click(function () {
     $('input[name=quantity_blur').val('0');
     $('input[name=quantity_fourier').val('0');
     blurFunction(0, 0);
