@@ -1,12 +1,15 @@
 $(document).ready(function () {
+	
+    // Init
+    $('#button-back-section').hide();
+    $('.about-network-section').hide();
+    $('.image-section').hide();
+    $('.gradcam-section').hide();
+    $('.loader').hide();
+    $('#result').hide();
+    var uploadFileName;
 
-  // Init
-  $('.image-section').hide();
-  $('.gradcam-section').hide();
-  $('.loader').hide();
-  $('#result').hide();
-
-  blurFunction = function (state, res) {
+    blurFunction = function(state, res) {
     /* state can be 1 or 0 */
     //var containerElement = document.getElementsByTagName("BODY")[0];
     var containerElement = document.getElementById('main-page');
@@ -24,42 +27,57 @@ $(document).ready(function () {
 
   var crop_canvas = null;
 
-  var resizeableImage = function (image_target) {
+  $('#btn-about').click(function () {
+    $('.uploading-result-section').hide();
+    $('#button-about-section').hide();
+    $('#button-back-section').show();
+    $('.about-network-section').show();
+  });
+
+  $('#btn-back').click(function () {
+    $('#button-back-section').hide();
+    $('.about-network-section').hide();
+    $('.uploading-result-section').show();
+    $('#button-about-section').show();
+  });
+
+  var resizeableImage = function(image_target) {
     // Some variable and settings
     var $container,
-      orig_src = new Image(),
-      image_target = $(image_target).get(0),
-      event_state = {},
-      constrain = false,
-      min_width = 60, // Change as required
-      min_height = 60,
-      max_width = 800, // Change as required
-      max_height = 1900,
-      resize_canvas = document.createElement('canvas');
-    imageData = null;
+    orig_src = new Image(),
+    image_target = $(image_target).get(0),
+    event_state = {},
+    constrain = false,
+    min_width = 60, // Change as required
+    min_height = 60,
+    max_width = 800, // Change as required
+    max_height = 1900,
+    resize_canvas = document.createElement('canvas');
+    imageData=null;
 
-    init = function () {
+    init = function(){
+    
+    //load a file with html5 file api
+    $("#imageUpload").change(function(evt) {
+          $('.image-section').show();
+          $('#btn-predict').show();
+          $('#result').text('');
+          $('#result').hide();
+          $('.gradcam-section').hide();
+      
+      var files = evt.target.files; // FileList object
+      var reader = new FileReader();
 
-      //load a file with html5 file api
-      $("#imageUpload").change(function (evt) {
-        $('.image-section').show();
-        $('#btn-predict').show();
-        $('#result').text('');
-        $('#result').hide();
-        $('.gradcam-section').hide();
-
-        var files = evt.target.files; // FileList object
-        var reader = new FileReader();
-
-        reader.onload = function (e) {
-          blurFunction(1, e.target.result);
-          $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-          $('#imagePreview').hide();
-          $('#imagePreview').fadeIn(650); //ladnie sie pojawia
-          imageData = reader.result;
-          loadData();
-        }
-        reader.readAsDataURL(files[0]);
+      reader.onload = function(e) {
+        blurFunction(1, e.target.result);
+        $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+        $('#imagePreview').hide();
+        $('#imagePreview').fadeIn(650); //ladnie sie pojawia
+        imageData=reader.result;
+        loadData();
+      }
+      reader.readAsDataURL(files[0]);
+      uploadFileName = evt.target.value;
 
         evt.target.value = ''
       });
@@ -392,6 +410,45 @@ $(document).ready(function () {
       });
     }
 
+    // Predict
+    $('#btn-predict').click(function () {
+        crop_canvas.toBlob(function (blob) {
+            var form_data = new FormData();
+            form_data.append('file', blob, uploadFileName)
+
+            // Show loading animation
+            $(this).hide();
+            $('#loader1').show();
+
+            // Make prediction by calling api /predict
+            $.ajax({
+                type: 'POST',
+                url: '/predict',
+                data: form_data,
+                contentType: false,
+                cache: false,
+                processData: false,
+                async: true,
+                success: function (data) {
+                    // Get and display the result
+                    $('#loader1').hide();
+                    $('#result').fadeIn(600);
+                    if (data.true_class == "") $('#result').text(' Result: ' + data.result + data.probabilities);
+                    else $('#result').text(' True class: ' + data.true_class + '\n' + ' Result: ' + data.result + data.probabilities);
+                    if (data.result == 'no corrosion') {
+                        $('#result').css('color', '#80b918');
+                    } else {
+                        $('#result').css('color', '#dc2f02');
+                    }
+                    $('.gradcam-section').show();
+                    $('.gradcam-preview').hide();
+                    $('#btn-gradcam').show();
+                    console.log('Success!');
+                }
+            });
+        }, 'image/jpg');
+      });
+
     function incrementBlur(e) {
       $('input[name=quantity_fourier').val('0');
       e.preventDefault();
@@ -579,8 +636,6 @@ $(document).ready(function () {
           });
         }, 'image/jpg');
       });
-
-      
     };
   
     init();
@@ -593,44 +648,6 @@ $(document).ready(function () {
     $('input[name=quantity_blur').val('0');
     $('input[name=quantity_fourier').val('0');
     blurFunction(0, 0);
-  });
-
-  // Predict
-  $('#btn-predict').click(function () {
-    crop_canvas.toBlob(function (blob) {
-      var form_data = new FormData();
-      form_data.append('file', blob, 'image.jpg')
-
-      // Show loading animation
-      $(this).hide();
-      $('#loader1').show();
-
-      // Make prediction by calling api /predict
-      $.ajax({
-        type: 'POST',
-        url: '/predict',
-        data: form_data,
-        contentType: false,
-        cache: false,
-        processData: false,
-        async: true,
-        success: function (data) {
-          // Get and display the result
-          $('#loader1').hide();
-          $('#result').fadeIn(600);
-          $('#result').text(' Result:  ' + data);
-          if (data == 'no corrosion') {
-            $('#result').css('color', '#80b918');
-          } else {
-            $('#result').css('color', '#dc2f02');
-          }
-          $('.gradcam-section').show();
-          $('.gradcam-preview').hide();
-          $('#btn-gradcam').show();
-          console.log('Success!');
-        }
-      });
-    }, 'image/jpg');
   });
 
   // gradCam
