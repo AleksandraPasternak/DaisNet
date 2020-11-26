@@ -687,10 +687,10 @@ $(document).ready(function () {
     if ($(s).width() == 320) {
       $(s).animate({ 'width': '640px' });
       $(s).css({ 'cursor': 'zoom-out' });
-      $('.gradcam-preview').css({ 'height': '1100px' })
+      $('.gradcam-preview').css({ 'height': '1200px' })
     }
     else if ($(previous).width() != 320) {
-      $('.gradcam-preview').css({ 'height': '550px' })
+      $('.gradcam-preview').css({ 'height': '600px' })
       $(previous).animate({ 'width': '320px' });
       $(previous).css({ 'cursor': 'zoom-in' });
     }
