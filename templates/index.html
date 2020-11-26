@@ -2,12 +2,29 @@
 
 <div id="page-overlay">
     <div id="popup">
-        <button class="btn crop">Crop</button>
+        <div class="tools">
+            <span><label>Gaussian blur</label></span>
+            <span><label>Fourier</label></span>
+        </div>
+        <div class="blur-sigma">
+            <input type="button" value="-" class="minus-blur" data-field="quantity_blur">
+            <input id="blur" type="number" step="1" max="" value="0" name="quantity_blur" class="quantity-field" disabled>
+            <input type="button" value="+" class="plus-blur" data-field="quantity_blur">
+            <input type="button" value="-" class="minus-fourier" data-field="quantity_fourier">
+            <input id="fourier" type="number" step="1" max="" value="0" name="quantity_fourier" class="quantity-field" disabled>
+            <input type="button" value="+" class="plus-fourier" data-field="quantity_fourier">
+            
+            <button class="btn" id="contour">Contour</button>
+            <button class="btn" id="sharpen">Sharpen</button>
+            <button class="btn" id="reset">Reset</button>
+            <button class="btn" id="crop">Crop</button>
+        </div>
         <div class="crop-wrapper">
+            <div class="loader" id="loader-blur" style="display:none;"></div>
             <div class="overlay">
                 <div class="overlay-inner"> </div>
             </div>
-            <img class="resize-image" src="" alt="Resizable image">
+            <img class="resize-image" src="" alt="Resizable image" id="resized-image">
         </div>
     </div>
 </div>
@@ -52,13 +69,13 @@
     </div>
     <div class="recent-photos">
         <div class="gallery">
-            <img src="/static/default_pictures/010A0012_0_0_0.BMP" alt="Aham" width="320" height="240">
+            <img src="/static/default_pictures/010A0012_0_0_0.BMP" alt="plane 1" width="320" height="240">
         </div>
         <div class="gallery">
-            <img src="/static/default_pictures/010B0001_0_0_0.BMP" alt="Achh" width="320" height="240">
+            <img src="/static/default_pictures/010B0001_0_0_0.BMP" alt="plane 2" width="320" height="240">
         </div>
         <div class="gallery">
-            <img src="/static/default_pictures/010D0013_1_0_0.BMP" alt="UUU" width="320" height="240">
+            <img src="/static/default_pictures/010D0013_1_0_0.BMP" alt="plane 3" width="320" height="240">
         </div>
     </div>
     </div>

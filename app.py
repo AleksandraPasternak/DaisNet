@@ -7,6 +7,9 @@ import cv2
 import uuid
 import base64
 import sqlite3
+from PIL import Image, ImageFilter
+from scipy.ndimage import gaussian_filter, fourier_gaussian
+from scipy import misc
 
 # Keras
 from tensorflow.keras.models import load_model
@@ -59,6 +62,26 @@ def apply_gradcam(img_path):
 
     output = np.vstack([heatmap_legend, white_strip, heatmap, output])
     return output
+
+
+def apply_blur(img_path, val):
+    img = Image.open(img_path)
+    return gaussian_filter(img, sigma=val)
+
+
+def apply_fourier(img_path, val):
+    img = Image.open(img_path)
+    return fourier_gaussian(img, sigma=val)
+
+
+def apply_sharpen(img_path):
+    img = Image.open(img_path)
+    return img.filter(ImageFilter.SHARPEN).convert('RGB')
+
+
+def apply_edges(img_path):
+    img = Image.open(img_path)
+    return img.filter(ImageFilter.CONTOUR).convert('RGB')
 
 
 @app.route('/', methods=['GET'])
@@ -122,6 +145,136 @@ def gradcam_info():
         base64_message = img_base64.decode('utf-8')
 
         os.remove(gradcam_output_fnm)
+
+        return str(base64_message)
+    return None
+
+@app.route('/blur', methods=['GET', 'POST'])
+def blur():
+    if request.method == 'POST':
+        f = request.files['file']
+        sigma = int(request.form['val'])
+
+        # Save the file to ./uploads
+        base_path = os.path.dirname(__file__)  # path of the current directory under which a .py file is executed
+        _, ext = secure_filename(f.filename).split(".")
+        file_path = os.path.join('uploads', str(uuid.uuid4()) + "." + ext)
+        abs_file_path = os.path.join(base_path, file_path)
+        f.save(abs_file_path)
+
+        blur_output = apply_blur(file_path, sigma)
+
+        os.remove(file_path)
+
+        blur_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
+        cv2.imwrite(blur_output_fnm, blur_output)
+
+        byte_data = io.BytesIO()
+        with open(blur_output_fnm, 'rb') as fo:
+            byte_data.write(fo.read())
+        byte_data.seek(0)
+
+        img_base64 = base64.b64encode(byte_data.read())
+        base64_message = img_base64.decode('utf-8')
+
+        os.remove(blur_output_fnm)
+
+        return str(base64_message)
+    return None
+
+@app.route('/fourier', methods=['GET', 'POST'])
+def fourier():
+    if request.method == 'POST':
+        f = request.files['file']
+        sigma = int(request.form['val'])
+        
+        # Save the file to ./uploads
+        base_path = os.path.dirname(__file__)  # path of the current directory under which a .py file is executed
+        _, ext = secure_filename(f.filename).split(".")
+        file_path = os.path.join('uploads', str(uuid.uuid4()) + "." + ext)
+        abs_file_path = os.path.join(base_path, file_path)
+        f.save(abs_file_path)
+
+        fourier_output = apply_fourier(file_path, sigma)
+
+        os.remove(file_path)
+
+        fourier_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
+        cv2.imwrite(fourier_output_fnm, fourier_output)
+
+        byte_data = io.BytesIO()
+        with open(fourier_output_fnm, 'rb') as fo:
+            byte_data.write(fo.read())
+        byte_data.seek(0)
+
+        img_base64 = base64.b64encode(byte_data.read())
+        base64_message = img_base64.decode('utf-8')
+
+        os.remove(fourier_output_fnm)
+
+        return str(base64_message)
+    return None
+
+@app.route('/sharpen', methods=['GET', 'POST'])
+def sharpen():
+    if request.method == 'POST':
+        f = request.files['file']
+        
+        # Save the file to ./uploads
+        base_path = os.path.dirname(__file__)  # path of the current directory under which a .py file is executed
+        _, ext = secure_filename(f.filename).split(".")
+        file_path = os.path.join('uploads', str(uuid.uuid4()) + "." + ext)
+        abs_file_path = os.path.join(base_path, file_path)
+        f.save(abs_file_path)
+
+        sharpen_output = apply_sharpen(file_path)
+
+        os.remove(file_path)
+
+        sharpen_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
+        sharpen_output.save(sharpen_output_fnm)
+
+        byte_data = io.BytesIO()
+        with open(sharpen_output_fnm, 'rb') as fo:
+            byte_data.write(fo.read())
+        byte_data.seek(0)
+
+        img_base64 = base64.b64encode(byte_data.read())
+        base64_message = img_base64.decode('utf-8')
+
+        os.remove(sharpen_output_fnm)
+
+        return str(base64_message)
+    return None
+
+@app.route('/contour', methods=['GET', 'POST'])
+def contour():
+    if request.method == 'POST':
+        f = request.files['file']
+        
+        # Save the file to ./uploads
+        base_path = os.path.dirname(__file__)  # path of the current directory under which a .py file is executed
+        _, ext = secure_filename(f.filename).split(".")
+        file_path = os.path.join('uploads', str(uuid.uuid4()) + "." + ext)
+        abs_file_path = os.path.join(base_path, file_path)
+        f.save(abs_file_path)
+
+        edges_output = apply_edges(file_path)
+
+        os.remove(file_path)
+
+        edges_output_fnm = os.path.join('uploads', str(uuid.uuid4()) + ".jpg")
+        edges_output.save(edges_output_fnm)
+
+        byte_data = io.BytesIO()
+        with open(edges_output_fnm, 'rb') as fo:
+            byte_data.write(fo.read())
+        byte_data.seek(0)
+
+        img_base64 = base64.b64encode(byte_data.read())
+        base64_message = img_base64.decode('utf-8')
+
+        os.remove(edges_output_fnm)
 
         return str(base64_message)
     return None
