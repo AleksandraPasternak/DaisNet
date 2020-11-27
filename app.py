@@ -210,7 +210,7 @@ def fourier():
         abs_file_path = os.path.join(base_path, file_path)
         f.save(abs_file_path)
 
-        fourier_output = apply_fourier(file_path, sigma)
+        fourier_output = apply_fourier(file_path, sigma/5.)
 
         os.remove(file_path)
 
