@@ -138,6 +138,12 @@ def grayscale(file_path):
     return grayscale_output_path
 
 
+def gradcam(file_path):
+    gradcam_output, gradcam_output_path = apply_transform_to_image(file_path, apply_gradcam)
+    cv2.imwrite(gradcam_output_path, gradcam_output)
+    return gradcam_output_path
+
+
 def prepare_transform_response(output_path):
     base64_message = prepare_base64_message(output_path)
     os.remove(output_path)
@@ -196,8 +202,10 @@ def upload():
 def gradcam_info():
     if request.method == 'POST':
         # apply gradcam
-        gradcam_output, gradcam_output_path = apply_transform_to_image(request.files['file'], apply_gradcam)
-        cv2.imwrite(gradcam_output_path, gradcam_output)
+        _, abs_file_path = save_uploaded_file(request.files['file'])
+        # gradcam_output, gradcam_output_path = apply_transform_to_image(request.files['file'], apply_gradcam)
+        # cv2.imwrite(gradcam_output_path, gradcam_output)
+        gradcam_output_path = gradcam(abs_file_path)
         response = prepare_transform_response(gradcam_output_path)
         return response
     return None
