@@ -117,6 +117,12 @@ def save_uploaded_file(file):
     return name, abs_file_path
 
 
+def prepare_transform_response(output_path):
+    base64_message = prepare_base64_message(output_path)
+    os.remove(output_path)
+    return str(base64_message)
+
+
 def prepare_base64_message(output_fnm):
     byte_data = io.BytesIO()
     with open(output_fnm, 'rb') as fo:
@@ -164,9 +170,8 @@ def gradcam_info():
         # apply gradcam
         gradcam_output, gradcam_output_path = apply_transform_to_image(request.files['file'], apply_gradcam)
         cv2.imwrite(gradcam_output_path, gradcam_output)
-        base64_message = prepare_base64_message(gradcam_output_path)
-        os.remove(gradcam_output_path)
-        return str(base64_message)
+        response = prepare_transform_response(gradcam_output_path)
+        return response
     return None
 
 
@@ -176,9 +181,8 @@ def blur():
         blur_output, blur_output_path = apply_transform_to_image(request.files['file'], apply_blur,
                                                                  int(request.form['val']))
         cv2.imwrite(blur_output_path, blur_output)
-        base64_message = prepare_base64_message(blur_output_path)
-        os.remove(blur_output_path)
-        return str(base64_message)
+        response = prepare_transform_response(blur_output_path)
+        return response
     return None
 
 
@@ -188,9 +192,8 @@ def fourier():
         fourier_output, fourier_output_path = apply_transform_to_image(request.files['file'], apply_fourier,
                                                                        int(request.form['val'])/5.)
         cv2.imwrite(fourier_output_path, fourier_output)
-        base64_message = prepare_base64_message(fourier_output_path)
-        os.remove(fourier_output_path)
-        return str(base64_message)
+        response = prepare_transform_response(fourier_output_path)
+        return response
     return None
 
 
@@ -199,9 +202,8 @@ def sharpen():
     if request.method == 'POST':
         sharpen_output, sharpen_output_path = apply_transform_to_image(request.files['file'], apply_sharpen)
         sharpen_output.save(sharpen_output_path)
-        base64_message = prepare_base64_message(sharpen_output_path)
-        os.remove(sharpen_output_path)
-        return str(base64_message)
+        response = prepare_transform_response(sharpen_output_path)
+        return response
     return None
 
 
@@ -210,9 +212,8 @@ def contour():
     if request.method == 'POST':
         edges_output, edges_output_path = apply_transform_to_image(request.files['file'], apply_edges)
         edges_output.save(edges_output_path)
-        base64_message = prepare_base64_message(edges_output_path)
-        os.remove(edges_output_path)
-        return str(base64_message)
+        response = prepare_transform_response(edges_output_path)
+        return response
     return None
 
 
@@ -221,9 +222,8 @@ def grayscale():
     if request.method == 'POST':
         grayscale_output, grayscale_output_path = apply_transform_to_image(request.files['file'], apply_grayscale)
         grayscale_output.save(grayscale_output_path)
-        base64_message = prepare_base64_message(grayscale_output_path)
-        os.remove(grayscale_output_path)
-        return str(base64_message)
+        response = prepare_transform_response(grayscale_output_path)
+        return response
     return None
 
 
