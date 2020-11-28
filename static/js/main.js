@@ -104,6 +104,7 @@ $(document).ready(function () {
       $('#crop_save').on('click', crop_save);
       $('#contour').on('click', contour);
       $('#sharpen').on('click', sharpen);
+      $('#grayscale').on('click', grayscale);
       $('#reset').click(function() {
         if(imageData)
           loadData();
@@ -401,6 +402,57 @@ $(document).ready(function () {
                 resizeImageCanvas($(image_target).width(), $(image_target).height());
               });
               
+              $('#loader-blur').hide();
+              $('#resized-image').show();
+              console.log('Success!');
+            }
+          });
+        }, 'image/jpg');
+      });
+    }
+
+    grayscale = function () {
+      // Show loading animation
+      $('#loader-blur').show();
+      $('#resized-image').hide();
+
+      image_target.src = imageData;
+      orig_src.src = image_target.src;
+
+      $(image_target).css({
+        width: 'auto',
+        height: 'auto'
+      });
+
+      //resize the canvas
+      $(orig_src).one('load', function () {
+        resizeImageCanvas($(image_target).width(), $(image_target).height());
+        resize_canvas.toBlob(function (blob) {
+
+          var form_data = new FormData();
+          form_data.append('file', blob, 'image.jpg')
+
+          $.ajax({
+            type: 'POST',
+            url: '/grayscale',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (data) {
+              //set the image target
+              orig_src.src = "data:image/jpg;base64," + data;
+
+              $(image_target).css({
+                width: 'auto',
+                height: 'auto'
+              });
+
+              //resize the canvas
+              $(orig_src).bind('load', function () {
+                resizeImageCanvas($(image_target).width(), $(image_target).height());
+              });
+
               $('#loader-blur').hide();
               $('#resized-image').show();
               console.log('Success!');
