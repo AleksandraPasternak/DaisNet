@@ -430,6 +430,7 @@ $(document).ready(function () {
       // Show loading animation
       $('#loader-blur').show();
       $('#resized-image').hide();
+      setHandlersColor("white");
 
       image_target.src = imageData;
       orig_src.src = image_target.src;
@@ -468,9 +469,12 @@ $(document).ready(function () {
                 resizeImageCanvas($(image_target).width(), $(image_target).height());
               });
 
-              $('#loader-blur').hide();
-              $('#resized-image').show();
-              console.log('Success!');
+              $(orig_src).one('load', function () {
+                $('#loader-blur').hide();
+                $('#resized-image').show();
+                setHandlersColor("rgba(0,0,0,.9)");
+                console.log('Success!');
+              });
             }
           });
         }, 'image/jpg');
