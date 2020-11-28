@@ -35,7 +35,8 @@ NAME_PATTERNS = {
     '1_1_1': 'hard corossion',
     '2_0_0': 'soft damage'
 }
-
+BASIC_FILTERS = ['grayscale', 'sharpen', 'contour']
+ADV_FILTERS = ['blur', 'fourier']
 
 def preprocess_img(img_path):
     img = image.load_img(img_path, target_size=TARGET_SIZE, color_mode="grayscale")
@@ -99,22 +100,42 @@ def apply_grayscale(img_path):
     return img.convert('L')
 
 
-def apply_transform_to_image(file, transform, transform_args=None):
-    _, abs_file_path = save_uploaded_file(file)
+def apply_transform_to_image(abs_file_path, transform, transform_args=None):
     if transform_args:
         transform_output = transform(abs_file_path, transform_args)
     else:
         transform_output = transform(abs_file_path)
-    os.remove(abs_file_path)
-    return transform_output, os.path.join(UPLOADS_PATH, str(uuid.uuid4()) + ".jpg")
+    return transform_output, abs_file_path
 
 
-def save_uploaded_file(file):
-    # Save the file to ./uploads
-    name, ext = secure_filename(file.filename).split(".")
-    abs_file_path = os.path.join(UPLOADS_PATH, str(uuid.uuid4()) + "." + ext)
-    file.save(abs_file_path)
-    return name, abs_file_path
+def blur(file_path, val):
+    blur_output, blur_output_path = apply_transform_to_image(file_path, apply_blur,val)
+    cv2.imwrite(blur_output_path, blur_output)
+    return blur_output_path
+
+
+def fourier(file_path, val):
+    fourier_output, fourier_output_path = apply_transform_to_image(file_path, apply_fourier, val/5.)
+    cv2.imwrite(fourier_output_path, fourier_output)
+    return fourier_output_path
+
+
+def sharpen(file_path):
+    sharpen_output, sharpen_output_path = apply_transform_to_image(file_path, apply_sharpen)
+    sharpen_output.save(sharpen_output_path)
+    return sharpen_output_path
+
+
+def contour(file_path):
+    edges_output, edges_output_path = apply_transform_to_image(file_path, apply_edges)
+    edges_output.save(edges_output_path)
+    return edges_output_path
+
+
+def grayscale(file_path):
+    grayscale_output, grayscale_output_path = apply_transform_to_image(file_path, apply_grayscale)
+    grayscale_output.save(grayscale_output_path)
+    return grayscale_output_path
 
 
 def prepare_transform_response(output_path):
@@ -132,6 +153,14 @@ def prepare_base64_message(output_fnm):
     img_base64 = base64.b64encode(byte_data.read())
     base64_message = img_base64.decode('utf-8')
     return base64_message
+
+
+def save_uploaded_file(file):
+    # Save the file to ./uploads
+    name, ext = secure_filename(file.filename).split(".")
+    abs_file_path = os.path.join(UPLOADS_PATH, str(uuid.uuid4()) + "." + ext)
+    file.save(abs_file_path)
+    return name, abs_file_path
 
 
 @app.route('/', methods=['GET'])
@@ -153,7 +182,6 @@ def upload():
         # Make prediction
         img = preprocess_img(abs_file_path)
         predictions = model_predict(img)
-        print(predictions)
         os.remove(abs_file_path)
 
         pred_class = predictions.argmax()
@@ -175,54 +203,26 @@ def gradcam_info():
     return None
 
 
-@app.route('/blur', methods=['GET', 'POST'])
-def blur():
+@app.route('/filter', methods=['GET', 'POST'])
+def filters():
     if request.method == 'POST':
-        blur_output, blur_output_path = apply_transform_to_image(request.files['file'], apply_blur,
-                                                                 int(request.form['val']))
-        cv2.imwrite(blur_output_path, blur_output)
-        response = prepare_transform_response(blur_output_path)
-        return response
-    return None
-
-
-@app.route('/fourier', methods=['GET', 'POST'])
-def fourier():
-    if request.method == 'POST':
-        fourier_output, fourier_output_path = apply_transform_to_image(request.files['file'], apply_fourier,
-                                                                       int(request.form['val'])/5.)
-        cv2.imwrite(fourier_output_path, fourier_output)
-        response = prepare_transform_response(fourier_output_path)
-        return response
-    return None
-
-
-@app.route('/sharpen', methods=['GET', 'POST'])
-def sharpen():
-    if request.method == 'POST':
-        sharpen_output, sharpen_output_path = apply_transform_to_image(request.files['file'], apply_sharpen)
-        sharpen_output.save(sharpen_output_path)
-        response = prepare_transform_response(sharpen_output_path)
-        return response
-    return None
-
-
-@app.route('/contour', methods=['GET', 'POST'])
-def contour():
-    if request.method == 'POST':
-        edges_output, edges_output_path = apply_transform_to_image(request.files['file'], apply_edges)
-        edges_output.save(edges_output_path)
-        response = prepare_transform_response(edges_output_path)
-        return response
-    return None
-
-
-@app.route('/grayscale', methods=['GET', 'POST'])
-def grayscale():
-    if request.method == 'POST':
-        grayscale_output, grayscale_output_path = apply_transform_to_image(request.files['file'], apply_grayscale)
-        grayscale_output.save(grayscale_output_path)
-        response = prepare_transform_response(grayscale_output_path)
+        _, abs_file_path = save_uploaded_file(request.files['file'])
+        for transform in BASIC_FILTERS:
+            if int(request.form[transform]) == 1:
+                if transform == 'grayscale':
+                    abs_file_path = grayscale(abs_file_path)
+                elif transform == 'sharpen':
+                    abs_file_path = sharpen(abs_file_path)
+                else:
+                    abs_file_path = contour(abs_file_path)
+        for transform in ADV_FILTERS:
+            if int(request.form[transform]) > 0:
+                if transform == 'blur':
+                    abs_file_path = blur(abs_file_path, int(request.form[transform]))
+                else:
+                    abs_file_path = fourier(abs_file_path, int(request.form[transform]))
+        response = prepare_base64_message(abs_file_path)
+        os.remove(abs_file_path)
         return response
     return None
 

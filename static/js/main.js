@@ -102,10 +102,20 @@ $(document).ready(function () {
       $container.on('mousedown touchstart', '.resize-handle', startResize);
       $container.on('mousedown touchstart', '.resize-container-ontop', startMoving);
       $('#crop_save').on('click', crop_save);
-      $('#contour').on('click', contour);
-      $('#sharpen').on('click', sharpen);
-      $('#grayscale').on('click', grayscale);
+
+      $('#grayscale').change(function() {
+        applyFilters();        
+      });
+      $('#sharpen').change(function() {
+        applyFilters();        
+      });
+      $('#contour').change(function() {
+        applyFilters();        
+      });
       $('#reset').click(function() {
+        $(".custom-control-input").prop("checked", false);
+        $('input[name=quantity_blur').val('0');
+        $('input[name=quantity_fourier').val('0');
         if(imageData)
           loadData();
       });
@@ -295,7 +305,7 @@ $(document).ready(function () {
       $('#imagePreview').hide();
       $('#imagePreview').fadeIn(650);
       $('#imagePreview').css('background-image', 'url(' + dataURL + ')');
-
+      $(".custom-control-input").prop("checked", false);
 
       $(image_target).bind("load", function () {
         $(this).css({
@@ -316,8 +326,7 @@ $(document).ready(function () {
       $(".resize-handle-sw").css("background-color", color)
     }
 
-    contour = function () {
-        // Show loading animation
+    applyFilters = function () {
       $('#loader-blur').show();
       $('#resized-image').hide();
       setHandlersColor("white");
@@ -334,13 +343,35 @@ $(document).ready(function () {
       $(orig_src).one('load', function () {
         resizeImageCanvas($(image_target).width(), $(image_target).height());
         resize_canvas.toBlob(function (blob) {
-  
+
           var form_data = new FormData();
+
           form_data.append('file', blob, 'image.jpg')
+
+          if ($('#grayscale').is(":checked")) {
+            form_data.append('grayscale', 1);
+          } else {
+            form_data.append('grayscale', 0);
+          }
+          if ($('#sharpen').is(":checked")) {
+            form_data.append('sharpen', 1);
+          } else {
+            form_data.append('sharpen', 0);
+          }
+          if ($('#contour').is(":checked")) {
+            form_data.append('contour', 1);
+          } else {
+            form_data.append('contour', 0);
+          }
+  
+          f = parseInt($( "input[name='quantity_fourier']").val(), 10);
+          b = parseInt($( "input[name='quantity_blur']").val(), 10);
+          form_data.append('fourier', f)
+          form_data.append('blur', b)
     
           $.ajax({
             type: 'POST',
-            url: '/contour',
+            url: '/filter',
             data: form_data,
             contentType: false,
             cache: false,
@@ -359,116 +390,6 @@ $(document).ready(function () {
                 resizeImageCanvas($(image_target).width(), $(image_target).height());
               });
               
-              $(orig_src).one('load', function () {
-                $('#loader-blur').hide();
-                $('#resized-image').show();
-                setHandlersColor("rgba(0,0,0,.9)");
-                console.log('Success!');
-              });
-            }
-          });
-        }, 'image/jpg');
-      });
-    }
-
-    sharpen = function () {
-      // Show loading animation
-      $('#loader-blur').show();
-      $('#resized-image').hide();
-      setHandlersColor("white");
-
-      image_target.src = imageData;
-      orig_src.src = image_target.src;
-
-      $(image_target).css({
-        width: 'auto',
-        height: 'auto'
-      });
-
-      //resize the canvas
-      $(orig_src).one('load', function () {
-        resizeImageCanvas($(image_target).width(), $(image_target).height());
-        resize_canvas.toBlob(function (blob) {
-  
-          var form_data = new FormData();
-          form_data.append('file', blob, 'image.jpg')
-    
-          $.ajax({
-            type: 'POST',
-            url: '/sharpen',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function (data) {
-              //set the image target
-              orig_src.src = "data:image/jpg;base64," + data;
-
-              $(image_target).css({
-                width: 'auto',
-                height: 'auto'
-              });
-    
-              //resize the canvas
-              $(orig_src).bind('load', function () {
-                resizeImageCanvas($(image_target).width(), $(image_target).height());
-              });
-              
-              $(orig_src).one('load', function () {
-                $('#loader-blur').hide();
-                $('#resized-image').show();
-                setHandlersColor("rgba(0,0,0,.9)");
-                console.log('Success!');
-              });
-            }
-          });
-        }, 'image/jpg');
-      });
-    }
-
-    grayscale = function () {
-      // Show loading animation
-      $('#loader-blur').show();
-      $('#resized-image').hide();
-      setHandlersColor("white");
-
-      image_target.src = imageData;
-      orig_src.src = image_target.src;
-
-      $(image_target).css({
-        width: 'auto',
-        height: 'auto'
-      });
-
-      //resize the canvas
-      $(orig_src).one('load', function () {
-        resizeImageCanvas($(image_target).width(), $(image_target).height());
-        resize_canvas.toBlob(function (blob) {
-
-          var form_data = new FormData();
-          form_data.append('file', blob, 'image.jpg')
-
-          $.ajax({
-            type: 'POST',
-            url: '/grayscale',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function (data) {
-              //set the image target
-              orig_src.src = "data:image/jpg;base64," + data;
-
-              $(image_target).css({
-                width: 'auto',
-                height: 'auto'
-              });
-
-              //resize the canvas
-              $(orig_src).bind('load', function () {
-                resizeImageCanvas($(image_target).width(), $(image_target).height());
-              });
-
               $(orig_src).one('load', function () {
                 $('#loader-blur').hide();
                 $('#resized-image').show();
@@ -521,7 +442,6 @@ $(document).ready(function () {
       });
 
     function incrementBlur(e) {
-      $('input[name=quantity_fourier').val('0');
       e.preventDefault();
       var fieldName = $(e.target).data('field');
       var parent = $(e.target).closest('div');
@@ -529,7 +449,7 @@ $(document).ready(function () {
     
       if (!isNaN(currentVal)) {
         parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
-        blur(currentVal + 1);
+        applyFilters();
       } else {
         parent.find('input[name=' + fieldName + ']').val(0);
         loadData();
@@ -537,15 +457,14 @@ $(document).ready(function () {
     }
     
     function decrementBlur(e) {
-      $('input[name=quantity_fourier').val('0');
       e.preventDefault();
       var fieldName = $(e.target).data('field');
       var parent = $(e.target).closest('div');
       var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
     
-      if (!isNaN(currentVal) && currentVal > 1) {
+      if (!isNaN(currentVal) && currentVal >= 1) {
         parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
-        blur(currentVal - 1);
+        applyFilters();
       } else {
         parent.find('input[name=' + fieldName + ']').val(0);
         loadData();
@@ -553,7 +472,6 @@ $(document).ready(function () {
     }
 
     function incrementFourier(e) {
-      $('input[name=quantity_blur').val('0');
       e.preventDefault();
       var fieldName = $(e.target).data('field');
       var parent = $(e.target).closest('div');
@@ -561,7 +479,7 @@ $(document).ready(function () {
     
       if (!isNaN(currentVal)) {
         parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
-        fourier(currentVal + 1);
+        applyFilters();
       } else {
         parent.find('input[name=' + fieldName + ']').val(0);
         loadData();
@@ -569,15 +487,14 @@ $(document).ready(function () {
     }
     
     function decrementFourier(e) {
-      $('input[name=quantity_blur').val('0');
       e.preventDefault();
       var fieldName = $(e.target).data('field');
       var parent = $(e.target).closest('div');
       var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
     
-      if (!isNaN(currentVal) && currentVal > 1) {
+      if (!isNaN(currentVal) && currentVal >= 1) {
         parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
-        fourier(currentVal - 1);
+        applyFilters();
       } else {
         parent.find('input[name=' + fieldName + ']').val(0);
         loadData();
@@ -599,123 +516,6 @@ $(document).ready(function () {
     $('.blur-sigma').on('click', '.minus-fourier', function(e) {
       decrementFourier(e);
     });
-
-    blur = function (x) {
-
-      // Show loading animation
-      $(this).hide();
-      $('#loader-blur').show();
-      $('#resized-image').hide();
-      setHandlersColor("white");
-
-      image_target.src = imageData;
-      orig_src.src = image_target.src;
-
-      $(image_target).css({
-        width: 'auto',
-        height: 'auto'
-      });
-
-      //resize the canvas
-      $(orig_src).one('load', function () {
-        resizeImageCanvas($(image_target).width(), $(image_target).height());
-        resize_canvas.toBlob(function (blob) {
-  
-          var form_data = new FormData();
-          form_data.append('file', blob, 'image.jpg')
-          form_data.append('val', x)
-    
-          $.ajax({
-            type: 'POST',
-            url: '/blur',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function (data) {
-              //set the image target
-              orig_src.src = "data:image/jpg;base64," + data;
-    
-              $(image_target).css({
-                width: 'auto',
-                height: 'auto'
-              });
-    
-              //resize the canvas
-              $(orig_src).bind('load', function () {
-                resizeImageCanvas($(image_target).width(), $(image_target).height());
-              });
-              
-              $(orig_src).one('load', function () {
-                $('#loader-blur').hide();
-                $('#resized-image').show();
-                setHandlersColor("rgba(0,0,0,.9)");
-                console.log('Success!');
-              });
-            }
-          });
-        }, 'image/jpg');
-      });
-      
-    };
-
-    fourier = function (x) {
-
-      // Show loading animation
-      $(this).hide();
-      $('#loader-blur').show();
-      $('#resized-image').hide();
-      setHandlersColor("white");
-
-      image_target.src = imageData;
-      orig_src.src = image_target.src;
-
-      $(image_target).css({
-        width: 'auto',
-        height: 'auto'
-      });
-
-      //resize the canvas
-      $(orig_src).one('load', function () {
-        resizeImageCanvas($(image_target).width(), $(image_target).height());
-        resize_canvas.toBlob(function (blob) {
-  
-          var form_data = new FormData();
-          form_data.append('file', blob, 'image.jpg')
-          form_data.append('val', x)
-    
-          $.ajax({
-            type: 'POST',
-            url: '/fourier',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function (data) {
-              //set the image target
-              orig_src.src = "data:image/jpg;base64," + data;
-  
-              $(image_target).css({
-                width: 'auto',
-                height: 'auto'
-              });
-  
-              //resize the canvas
-              $(orig_src).bind('load', function () {
-                resizeImageCanvas($(image_target).width(), $(image_target).height());
-              });
-              
-              $(orig_src).one('load', function () {
-                $('#loader-blur').hide();
-                $('#resized-image').show();
-                setHandlersColor("rgba(0,0,0,.9)");
-                console.log('Success!');
-              });
-            }
-          });
-        }, 'image/jpg');
-      });
-    };
   
     init();
   };

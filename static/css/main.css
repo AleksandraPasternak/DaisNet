@@ -285,20 +285,6 @@ input[type="file"] {
     margin: 1px 4px 0px 4px;
 }
 
-.btn_tools {
-	border-radius: 0;
-	border: none;
-	display: inline-block;
-    padding: 10px 0px;
-    width: 100px;
-    background: #3D5A80;
-    color: #fff;
-    font-size: 0.9em;
-    transition: all .4s;
-    cursor: pointer;
-    margin: 1px 5px 0px 5px;
-}
-
 #tools-description {
     display: inline-block;
 }
@@ -311,7 +297,7 @@ input[type="file"] {
 
 #crop_save {
     float: right;
-    margin: 3px;
+    margin: 5px;
     display: inline-block;
 }
 
@@ -356,7 +342,8 @@ input[type=number] {
   clear: both;
   position: relative;
   background: rgb(198, 215, 231);
-  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-bottom: 2px;
   margin-left: 3px;
 }
 

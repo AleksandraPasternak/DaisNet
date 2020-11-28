@@ -2,22 +2,34 @@
 
 <div id="page-overlay">
     <div id="popup">
+        <div class="blur-sigma" style="width: 800px;"> 
+            <div class="gauss-fourier" style="float: left; width: 320px;">
+                <input type="button" value="-" class="minus-blur" data-field="quantity_blur">
+                <input id="blur" type="number" step="1" max="" value="0" name="quantity_blur" class="quantity-field" disabled>
+                <input type="button" value="+" class="plus-blur" data-field="quantity_blur">
+                <input type="button" value="-" class="minus-fourier" data-field="quantity_fourier">
+                <input id="fourier" type="number" step="1" max="" value="0" name="quantity_fourier" class="quantity-field" disabled>
+                <input type="button" value="+" class="plus-fourier" data-field="quantity_fourier">
+            </div>
+            <div class="custom-switch" style="float: left; width: 120px;">
+                <input type="checkbox" class="custom-control-input" id="grayscale">
+                <label class="custom-control-label" for="grayscale">Grayscale</label>
+            </div>
+            <div class="custom-switch" style="float: left; width: 120px;">
+                <input type="checkbox" class="custom-control-input" id="sharpen">
+                <label class="custom-control-label" for="sharpen">Sharpen</label>
+            </div>
+            <div class="custom-switch" style="float: left; width: 120px;">
+                <input type="checkbox" class="custom-control-input" id="contour">
+                <label class="custom-control-label" for="contour">Contour</label>
+            </div>
+            <div class="reset-button" style="float: left; width: 120px;">
+                <button class="btn" id="reset">Reset</button>
+            </div>
+        </div>
         <div class="tools">
             <span><label>Gaussian blur</label></span>
             <span><label>Fourier</label></span>
-        </div>
-        <div class="blur-sigma">
-            <input type="button" value="-" class="minus-blur" data-field="quantity_blur">
-            <input id="blur" type="number" step="1" max="" value="0" name="quantity_blur" class="quantity-field" disabled>
-            <input type="button" value="+" class="plus-blur" data-field="quantity_blur">
-            <input type="button" value="-" class="minus-fourier" data-field="quantity_fourier">
-            <input id="fourier" type="number" step="1" max="" value="0" name="quantity_fourier" class="quantity-field" disabled>
-            <input type="button" value="+" class="plus-fourier" data-field="quantity_fourier">
-            
-            <button class="btn_tools" id="contour">Contour</button>
-            <button class="btn_tools" id="sharpen">Sharpen</button>
-            <button class="btn_tools" id="grayscale">Grayscale</button>
-            <button class="btn_tools" id="reset">Reset</button>
         </div>
         <div class="crop-wrapper">
             <div class="loader" id="loader-blur" style="display:none;"></div>
