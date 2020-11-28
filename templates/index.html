@@ -2,32 +2,59 @@
 
 <div id="page-overlay">
     <div id="popup">
-        <button class="btn crop">
-            <a href="javascript:blurFunction(0, 0);">Crop</a>
-        </button>
-			<div class="crop-wrapper">
-				<div class="overlay">
-					<div class="overlay-inner">
-					</div>
-				</div>
-				<img class="resize-image" src="" alt="Resizable image">
-			</div>
+        <div class="tools">
+            <span><label>Gaussian blur</label></span>
+            <span><label>Fourier</label></span>
+        </div>
+        <div class="blur-sigma">
+            <input type="button" value="-" class="minus-blur" data-field="quantity_blur">
+            <input id="blur" type="number" step="1" max="" value="0" name="quantity_blur" class="quantity-field" disabled>
+            <input type="button" value="+" class="plus-blur" data-field="quantity_blur">
+            <input type="button" value="-" class="minus-fourier" data-field="quantity_fourier">
+            <input id="fourier" type="number" step="1" max="" value="0" name="quantity_fourier" class="quantity-field" disabled>
+            <input type="button" value="+" class="plus-fourier" data-field="quantity_fourier">
+            
+            <button class="btn_tools" id="contour">Contour</button>
+            <button class="btn_tools" id="sharpen">Sharpen</button>
+            <button class="btn_tools" id="grayscale">Grayscale</button>
+            <button class="btn_tools" id="reset">Reset</button>
+        </div>
+        <div class="crop-wrapper">
+            <div class="loader" id="loader-blur" style="display:none;"></div>
+            <div class="overlay">
+                <div class="overlay-inner"> </div>
+            </div>
+            <img class="resize-image" src="" alt="Resizable image" id="resized-image">
+        </div>
+        <div id="tools-description">
+            <p>Your photo must fit the gray frame</p>
+        </div>
+        <button class="btn" id="crop_save">Crop & Save</button>
     </div>
 </div>
 
-<h2>Image Classifier</h2>
-
-<div>
-    <div id="main-page">
+<div id="page-header">
+    <div class="description-section">
+        <h2>Image Classifier</h2>
+        <p>This site allows you to upload your DAIS' photo in order to predict whether the airplane's surface is corroded.</p>
+    </div>
+    <div id="button-about-section">
+        <button type="button" class="btn" id="btn-about">About classifier</button>
+    </div>
+    <div id="button-back-section">
+        <button type="button" class="btn" id="btn-back">Back to classifier</button>
+    </div>
+</div>
+<div id="main-page">
     <div class="uploading-result-section">
         <form id="upload-file">
             <label for="imageUpload" class="upload-label">
-                Upload
+                Upload photo
             </label>
             <input type="file" name="file" id="imageUpload" accept=".bmp, .png, .jpg, .jpeg">
         </form>
 
-		<div class="image-section" style="display:none;">
+        <div class="image-section" style="display:none;">
             <div class="img-preview">
                 <div id="imagePreview"> </div>
             </div>
@@ -36,23 +63,35 @@
             </div>
         </div>
 
-        <div class="loader" style="display:none;"></div>
+        <div class="loader" id="loader1" style="display:none;"></div>
 
         <h3 id="result">
             <span> </span>
         </h3>
+        <div class="gradcam-section" style="display:none;">
+            <button type="button" class="btn" id="btn-gradcam">More...</button>
+            <div class="loader" id="loader2" style="display:none;"></div>
+            <div class="gradcam-preview">
+                <p>Heatmap showing which pixels were responsible for prediction:</p>
+                <div id="gradcamPreview">
+                    <img id="gradcamOutput">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="about-network-section">
+
     </div>
     <div class="recent-photos">
         <div class="gallery">
-            <img src="/static/default_pictures/010A0012_0_0_0.BMP" alt="Aham" width="320" height="240">
+            <img src="/static/default_pictures/010A0012_0_0_0.BMP" alt="plane 1">
         </div>
         <div class="gallery">
-            <img src="/static/default_pictures/010B0001_0_0_0.BMP" alt="Achh" width="320" height="240">
+            <img src="/static/default_pictures/010B0001_0_0_0.BMP" alt="plane 2">
         </div>
         <div class="gallery">
-            <img src="/static/default_pictures/010D0013_1_0_0.BMP" alt="UUU" width="320" height="240">
+            <img src="/static/default_pictures/010D0013_1_0_0.BMP" alt="plane 3">
         </div>
-    </div>
     </div>
 
 </div>

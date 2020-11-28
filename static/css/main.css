@@ -14,8 +14,9 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: bottom;
+    background: rgb(198, 215, 231);
     width: 800px;
-    height: 600px;
+    height: 700px;
     border: 5px solid rgb(90,90,90);
     left: 0px;
     right: 0px;
@@ -24,11 +25,45 @@
     margin: auto;
 }
 
+.description-section {
+    width: 75%;
+    position: relative;
+    float: left;
+}
+
+#button-about-section {
+    width: 25%;
+    position: relative;
+    float: right;
+}
+
+#btn-about {
+    margin: 5px;
+}
+
+#button-back-section {
+    width: 25%;
+    position: relative;
+    float: right;
+}
+
+#btn-back {
+    margin: 5px;
+}
+
+#result {
+    margin: 25px 0px 40px 0px;
+}
+
+#btn-gradcam {
+    margin: 10px 0px 30px 0px;
+}
+
 .crop-wrapper {
 	background-color:rgba(255,255,255,1);
 	position:relative;
 	width:100%;
-	height:87%;
+	height:81%;
 	overflow:hidden;
 }
 
@@ -104,7 +139,7 @@
 	z-index: 999;
 	width: 320px;
 	height: 240px;
-    border: solid 2px rgba(222,222,222,.9);
+    border: solid 3px rgba(222,222,222,.9);
 	box-sizing: content-box;
 	pointer-events: none;
 }
@@ -116,16 +151,27 @@
     margin-top: -2px;
 }
 
-.btn-crop img {
-	vertical-align: middle;
-	margin-left: 8px;
+#main-page {
+    height: 100%;
+    width: 100%;
 }
 
 .uploading-result-section {
+    margin-top: 25px;
+    width: 75%;
+    max-height: 100%;
+    position: relative;
+    float: left;
+    display: inline-block;
+}
+
+.about-network-section {
+    margin-top: 25px;
     width: 75%;
     height: 100%;
     position: relative;
     float: left;
+    display: inline-block;
 }
 
 .img-preview {
@@ -146,15 +192,41 @@
     background-position: center;
 }
 
+.gradcam-preview {
+    width: 650px;
+    height: 600px;
+    position: relative;
+}
+
+.gradcam-preview>div {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#gradcamOutput{
+    cursor: zoom-in;
+    cursor: -webkit-zoom-in;
+    cursor: -moz-zoom-in;
+    width: 320px;
+}
+
+.gallery img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
 .recent-photos {
     width: 25%;
-    height: 100%;
+    max-height: 100%;
     position: relative;
     float: right;
+    display: inline-block;
 }
 
 .gallery {
-  margin: 5px;
+    margin: 5px;
 }
 
 input[type="file"] {
@@ -166,7 +238,7 @@ input[type="file"] {
     padding: 12px 30px;
     background: #3D5A80;
     color: #fff;
-    font-size: 1em;
+    font-size: 0.9em;
     transition: all .4s;
     cursor: pointer;
 }
@@ -177,24 +249,13 @@ input[type="file"] {
 }
 
 .loader {
+    margin: 10px 0px 10px 0px;
     border: 8px solid #f3f3f3;
     border-top: 8px solid #3498db;
     border-radius: 50%;
     width: 50px;
     height: 50px;
     animation: spin 1s linear infinite;
-}
-
-.btn {
-	border-radius: 0;
-	border: none;
-	display: inline-block;
-    padding: 12px 30px;
-    background: #3D5A80;
-    color: #fff;
-    font-size: 1em;
-    transition: all .4s;
-    cursor: pointer;
 }
 
 .btn:hover, .btn:focus, .btn:active {
@@ -209,6 +270,138 @@ input[type="file"] {
   height: 100%;
   width: 100%;
   backdrop-filter: blur(5px);
+}
+
+.btn {
+	border-radius: 0;
+	border: none;
+	display: inline-block;
+    padding: 12px 30px;
+    background: #3D5A80;
+    color: #fff;
+    font-size: 0.9em;
+    transition: all .4s;
+    cursor: pointer;
+    margin: 1px 4px 0px 4px;
+}
+
+.btn_tools {
+	border-radius: 0;
+	border: none;
+	display: inline-block;
+    padding: 10px 0px;
+    width: 100px;
+    background: #3D5A80;
+    color: #fff;
+    font-size: 0.9em;
+    transition: all .4s;
+    cursor: pointer;
+    margin: 1px 5px 0px 5px;
+}
+
+#tools-description {
+    display: inline-block;
+}
+
+#tools-description p {
+    margin-left: 1em;
+    margin-top: 1em;
+    font-size: 1.05em;
+}
+
+#crop_save {
+    float: right;
+    margin: 3px;
+    display: inline-block;
+}
+
+.tools {
+   display: flex;
+   padding-left: 5px;
+   padding-right: 5px;
+   margin-left: 13px;
+}
+
+span {
+    width: 190px;
+    height: 25px;
+}
+
+input,
+textarea {
+  border: 1px solid #3D5A80;
+  box-sizing: border-box;
+  margin: 0 4px 0 0;
+  outline: none;
+  padding: 0;
+}
+
+input[type="button"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.blur-sigma {
+  clear: both;
+  position: relative;
+  background: rgb(198, 215, 231);
+  margin-bottom: 8px;
+  margin-left: 3px;
+}
+
+.blur-sigma input[type='button'] {
+  background-color: #3D5A80;
+  min-width: 38px;
+  width: auto;
+  transition: all 300ms ease;
+}
+
+.blur-sigma .minus-blur,
+.blur-sigma .plus-blur,
+.blur-sigma .minus-fourier,
+.blur-sigma .plus-fourier {
+  font-weight: bold;
+  height: 38px;
+  padding: 0;
+  width: 38px;
+  position: relative;
+}
+
+.blur-sigma .quantity-field {
+  position: relative;
+  left: -7px;
+  height: 38px;
+  width: 58px;
+  text-align: center;
+  display: inline-block;
+  font-size: 0.9em;
+  resize: vertical;
+  background-color: #fff;
+}
+
+.blur-sigma .plus-fourier,
+.blur-sigma .plus-blur {
+  left: -13px;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+}
+
+h3 {
+  white-space: pre-line;
 }
 
 @keyframes spin {
