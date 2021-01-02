@@ -41,6 +41,8 @@ $(document).ready(function () {
     $('#button-about-section').show();
   });
 
+  var fileTypes = ['jpg', 'jpeg', 'bmp', 'png'];  //acceptable file types
+
   var resizeableImage = function(image_target) {
     // Some variable and settings
     var $container,
@@ -59,28 +61,34 @@ $(document).ready(function () {
     
     //load a file with html5 file api
     $("#imageUpload").change(function(evt) {
+      var files = evt.target.files; // FileList object
+      if (files && files[0]) {
+        var extension = files[0].name.split('.').pop().toLowerCase(),  //file extension from input file
+            isSuccess = fileTypes.indexOf(extension) > -1;  //is extension in acceptable types
+
+        if (isSuccess) {
           $('.image-section').show();
           $('#btn-predict').show();
           $('#result').text('');
           $('#result').hide();
           $('.gradcam-section').hide();
       
-      var files = evt.target.files; // FileList object
-      var reader = new FileReader();
+          var reader = new FileReader();
 
-      reader.onload = function(e) {
-        blurFunction(1, e.target.result);
-        $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-        $('#imagePreview').hide();
-        $('#imagePreview').fadeIn(650); //ladnie sie pojawia
-        imageData=reader.result;
-        loadData();
+          reader.onload = function(e) {
+            blurFunction(1, e.target.result);
+            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650); //ladnie sie pojawia
+            imageData=reader.result;
+            loadData();
+          }
+          reader.readAsDataURL(files[0]);
+          uploadFileName = evt.target.value;
+          evt.target.value = ''
+        }
       }
-      reader.readAsDataURL(files[0]);
-      uploadFileName = evt.target.value;
-
-        evt.target.value = ''
-      });
+    });
 
       // When resizing, we will always use this copy of the original as the base
       orig_src.src = image_target.src;
@@ -372,6 +380,7 @@ $(document).ready(function () {
           $.ajax({
             type: 'POST',
             url: '/filter',
+            async: false,
             data: form_data,
             contentType: false,
             cache: false,
