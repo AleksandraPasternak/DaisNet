@@ -2,7 +2,7 @@
 
 <div id="page-overlay">
     <div id="popup">
-        <div class="blur-sigma" style="width: 800px;"> 
+        <div class="blur-sigma" style="width: 800px;">
             <div class="gauss-fourier" style="float: left; width: 320px;">
                 <input type="button" value="-" class="minus-blur" data-field="quantity_blur">
                 <input id="blur" type="number" step="1" max="" value="0" name="quantity_blur" class="quantity-field" disabled>
@@ -92,7 +92,24 @@
         </div>
     </div>
     <div class="about-network-section">
-
+        <h4>About classifier</h4>
+        <p align="justify">Image classifier used by this site is based on EfficientNetB0 architecture (without top layers)
+            with following GlobalAveragePooling and Dense layers. </p>
+        <!--<img src="/static/default_pictures/inception-architecture.png" alt="Inception architecture" width=90%>-->
+        <p align="justify">The classifier was trained on images obtained from D-Sight Aircraft Inspection System (DAIS)
+            - examples of these images can be found on the right side of this site. Dataset contained 10343 training
+            images, 1448 validation images and 1284 test images split into 2 classes: corrosion - no corrosion
+            (corrosion class contained images featuring 4 levels of damages: soft, medium and hard corrosion and soft
+            damage). </p>
+        <p align="justify">Dataset preprocessing included feature-wise standardization. During training, data augmentation
+            including horizontal and vertical flips was used.</p>
+        <p align="justify">Classifier achieved 75% accuracy on test set with 73% precision and 89% recall.
+            Threshold above which images were classified as corroded was adjusted in order to minimize number of photos
+            incorrectly classified as not corroded (false negatives) - as this case is crucial for safety of inspected
+            machine's passengers - paying attention not to significantly decrease classifier's accuracy. </p>
+        <p align="justify">Classifier's output shows not only label predicted by network, but also probabilities of each
+            class (first value - no corrosion, second value - corrosion) which can be useful for professionals using
+            this site in deciding whether the image should be further analyzed or not.</p>
     </div>
     <div class="recent-photos">
         <div class="gallery">
