@@ -25,8 +25,11 @@ app = Flask(__name__)
 
 ROOT_PATH = os.path.dirname(__file__)
 UPLOADS_PATH = os.path.join(ROOT_PATH, "uploads")
-MODEL_DIR = "model2"
+MODEL_DIR = "model"
 TRAINED_MODEL = load_model(MODEL_DIR)
+TRUE_THRESHOLD = 0.3
+DATA_FEATUREWISE_MEAN = 82.25
+DATA_FEATUREWISE_STD = 51.71
 TARGET_SIZE = (240, 320)
 NAME_PATTERNS = {
     '0_0_0': 'no corrosion',
@@ -38,9 +41,18 @@ NAME_PATTERNS = {
 BASIC_FILTERS = ['grayscale', 'sharpen', 'contour']
 ADV_FILTERS = ['blur', 'fourier']
 
+
+def preprocess_img_std(img_path):
+    img = image.load_img(img_path, target_size=TARGET_SIZE, color_mode="grayscale")
+    input_arr = image.img_to_array(img)
+    input_arr = input_arr - DATA_FEATUREWISE_MEAN
+    input_arr = input_arr / DATA_FEATUREWISE_STD
+    input_arr = np.array([input_arr])  # convert single image to a batch.
+    return input_arr
+
+
 def preprocess_img(img_path):
     img = image.load_img(img_path, target_size=TARGET_SIZE, color_mode="grayscale")
-    # img.show()
     input_arr = image.img_to_array(img)
     input_arr = input_arr / 255.
     input_arr = np.array([input_arr])  # convert single image to a batch.
@@ -55,7 +67,7 @@ def model_predict(img):
 def apply_gradcam(img_path):
     original_img = cv2.imread(img_path)
     original_img = cv2.resize(original_img, (320, 240))
-    image = preprocess_img(img_path)
+    image = preprocess_img_std(img_path)
     preds = model_predict(image)
     i = np.argmax(preds[0])
 
@@ -186,11 +198,12 @@ def upload():
                 break
 
         # Make prediction
-        img = preprocess_img(abs_file_path)
+        img = preprocess_img_std(abs_file_path)
         predictions = model_predict(img)
         os.remove(abs_file_path)
 
-        pred_class = predictions.argmax()
+        # pred_class = predictions.argmax()
+        pred_class = 1 if predictions[1] >= TRUE_THRESHOLD else 0
         result = "corrosion" if pred_class == 1 else "no corrosion"
         probabilities = " (" + str("%.2f" % predictions[pred_class]) + " vs " + str(
             "%.2f" % predictions[abs(1 - pred_class)]) + ")"
@@ -237,3 +250,5 @@ def filters():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    # http_server = WSGIServer(('', 5000), app)
+    # http_server.serve_forever()
