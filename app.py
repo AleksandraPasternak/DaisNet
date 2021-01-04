@@ -69,7 +69,8 @@ def apply_gradcam(img_path):
     original_img = cv2.resize(original_img, (320, 240))
     image = preprocess_img_std(img_path)
     preds = model_predict(image)
-    i = np.argmax(preds[0])
+    # i = np.argmax(preds[0])
+    i = 1 if preds[1] >= TRUE_THRESHOLD else 0
 
     # initialize our gradient class activation map and build the heatmap
     cam = GradCAM(TRAINED_MODEL, i)
@@ -201,12 +202,14 @@ def upload():
         img = preprocess_img_std(abs_file_path)
         predictions = model_predict(img)
         os.remove(abs_file_path)
+        nocorrosion_proba, corrosion_proba = predictions
 
         # pred_class = predictions.argmax()
-        pred_class = 1 if predictions[1] >= TRUE_THRESHOLD else 0
+        pred_class = 1 if corrosion_proba >= TRUE_THRESHOLD else 0
         result = "corrosion" if pred_class == 1 else "no corrosion"
-        probabilities = " (" + str("%.2f" % predictions[pred_class]) + " vs " + str(
-            "%.2f" % predictions[abs(1 - pred_class)]) + ")"
+        pred_class_percent = round(predictions[pred_class]*100)
+        other_class_percent = round(predictions[abs(1 - pred_class)]*100)
+        probabilities = " (" + str("%d" % pred_class_percent) + "% vs " + str("%d" % other_class_percent) + "%)"
         return jsonify(true_class=true_class, result=result, probabilities=probabilities)
     return None
 
