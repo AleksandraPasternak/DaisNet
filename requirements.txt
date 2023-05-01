@@ -1,4 +1,4 @@
-Flask==1.1.2
+Flask==2.3.2
 gevent==20.9.0
 opencv-python==4.4.0.46
 Pillow==8.0.1
